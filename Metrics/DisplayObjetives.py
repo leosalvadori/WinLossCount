@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import math
 
-from PyQt5.QtCore import (Qt)
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QLayout, QLineEdit,
         QSizePolicy, QToolButton, QWidget, QLCDNumber)
 
@@ -25,66 +24,65 @@ class Objetives(QWidget):
     def __init__(self, parent=None):
         super(Objetives, self).__init__(parent)
 
+        paletteLosses = QPalette()
+        paletteVictory = QPalette()
+
+        paletteLosses.setColor(paletteLosses.WindowText, QColor(255, 000, 000))
+        paletteVictory.setColor(paletteVictory.WindowText, QColor(000, 255, 000))
+
         self.numVictory = 0
         self.numLosses = 0
 
-        self.displayLosses = QLineEdit('0')
-        self.displayVictory = QLineEdit('0')
+        self.lossesLcd = QLCDNumber(3)
+        self.lossesLcd.setSegmentStyle(QLCDNumber.Filled)
+        self.lossesLcd.setPalette(paletteLosses)
 
-        self.displayLosses.setReadOnly(True)
-        self.displayVictory.setReadOnly(True)
-
-        self.displayLosses.setAlignment(Qt.AlignCenter)
-        self.displayVictory.setAlignment(Qt.AlignCenter)
-
-        self.LossesLcd = QLCDNumber(3)
-        self.LossesLcd.setSegmentStyle(QLCDNumber.Filled)
-
-        font = self.displayLosses.font()
-        font.setPointSize(font.pointSize() + 8)
-        self.displayLosses.setFont(font)
-
-        self.displayVictory.setFont(font)
+        self.victoryLcd = QLCDNumber(3)
+        self.victoryLcd.setSegmentStyle(QLCDNumber.Filled)
+        self.victoryLcd.setPalette(paletteVictory)
 
         self.digitButtons = []
 
         self.victoryButton = self.createButton("Victory", "+",self.addVictoryOrLosses)
         self.lossesButton = self.createButton("Losses", "+",self.addVictoryOrLosses)
+        self.victoryDecreaseButton = self.createButton("VD","-",self.addVictoryOrLosses)
+        self.losseDecreaseButton = self.createButton("LD","-",self.addVictoryOrLosses)
 
         self.lossesButton.setMinimumWidth(150)
         self.victoryButton.setMinimumWidth(150)
-        self.LossesLcd.setMinimumHeight(100)
 
-        # self.victoryDecreaseButton = self.createButton("-",self.self)
-        # self.LosseDecreaseButton = self.createButton("-", self.self)
+        self.losseDecreaseButton.setMaximumWidth(30)
+        self.victoryDecreaseButton.setMaximumWidth(30)
+
+        self.lossesLcd.setMinimumHeight(100)
+        self.victoryLcd.setMinimumHeight(100)
 
         mainLayout = QGridLayout()
-        # mainLayout.setSizeConstraint(QLayout.SetFixedSize)
-        mainLayout.addWidget(self.displayLosses, 0, 0, 1, 1)
-        mainLayout.addWidget(self.displayVictory, 0, 1, 1, 1)
-        mainLayout.addWidget(self.victoryButton, 1, 1, 1, 1)
-        mainLayout.addWidget(self.lossesButton, 1, 0, 1, 1)
-        mainLayout.addWidget(self.LossesLcd, 2, 0, 1, 1)
+
+        mainLayout.addWidget(self.lossesLcd, 0, 2, 1, 1)
+        mainLayout.addWidget(self.victoryLcd, 0, 0, 1, 1)
+        mainLayout.addWidget(self.victoryButton, 1, 0, 1, 1)
+        mainLayout.addWidget(self.victoryDecreaseButton, 1, 1, 1, 1)
+        mainLayout.addWidget(self.lossesButton, 1, 2, 1, 1)
+        mainLayout.addWidget(self.losseDecreaseButton, 1, 3, 1, 1)
+
         self.setLayout(mainLayout)
 
         self.setWindowTitle("Objetives")
 
-
     def addVictoryOrLosses(self):
         clickedButton = self.sender()
         clickedOperator = clickedButton.text()
+        # clickedOp = clickedButton.op()
         operand = float(1)
 
-        # self.LossesLcd.value(operand)
-
-        if clickedOperator == "Victory":
+        if clickedOperator == "Victory": #or clickedOperator == "VD":
             self.numVictory = self.numVictory + 1
-            self.displayVictory.setText(str(self.numVictory))
+            self.victoryLcd.display(str(self.numVictory))
 
         if clickedOperator == "Losses":
             self.numLosses = self.numLosses + 1
-            self.displayLosses.setText(str(self.numLosses))
-            self.LossesLcd.display(str(self.numLosses))
+            self.lossesLcd.display(str(self.numLosses))
 
     def createButton(self, text, op, member):
         button = Button(text,op)
