@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import math
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QColor, QPainter, QPalette
 from PyQt5.QtWidgets import (QApplication, QGridLayout, QLayout, QLineEdit,
-        QSizePolicy, QToolButton, QWidget, QLCDNumber)
+        QSizePolicy, QToolButton, QWidget, QLCDNumber, QGroupBox, QHBoxLayout, QPushButton)
 
 class Button(QToolButton):
     def __init__(self, text, op, parent=None):
@@ -19,29 +21,28 @@ class Button(QToolButton):
 
 
 class Objetives(QWidget):
-    NumDigitButtons = 2
+    NumButtons = 3
 
     def __init__(self, parent=None):
         super(Objetives, self).__init__(parent)
 
-        paletteLosses = QPalette()
-        paletteVictory = QPalette()
-
-        paletteLosses.setColor(paletteLosses.WindowText, QColor(255, 000, 000))
-        paletteVictory.setColor(paletteVictory.WindowText, QColor(000, 255, 000))
+        self.createDisplay()
+        self.createButtons()
 
         self.numVictory = 0
         self.numLosses = 0
 
-        self.lossesLcd = QLCDNumber(3)
-        self.lossesLcd.setSegmentStyle(QLCDNumber.Filled)
-        self.lossesLcd.setPalette(paletteLosses)
+        mainLayout = QGridLayout()
+        mainLayout.addWidget(self.displayLCD)
+        mainLayout.addWidget(self.horizontalGroupBox)
 
-        self.victoryLcd = QLCDNumber(3)
-        self.victoryLcd.setSegmentStyle(QLCDNumber.Filled)
-        self.victoryLcd.setPalette(paletteVictory)
+        self.setLayout(mainLayout)
 
-        self.digitButtons = []
+        self.setWindowTitle("Objetives")
+
+    def createButtons(self):
+        self.horizontalGroupBox = QGroupBox("")
+        layout = QGridLayout()
 
         self.victoryButton = self.createButton("Victory", "+",self.addVictoryOrLosses)
         self.lossesButton = self.createButton("Losses", "+",self.addVictoryOrLosses)
@@ -51,24 +52,44 @@ class Objetives(QWidget):
         self.lossesButton.setMinimumWidth(150)
         self.victoryButton.setMinimumWidth(150)
 
-        self.losseDecreaseButton.setMaximumWidth(30)
-        self.victoryDecreaseButton.setMaximumWidth(30)
+        self.losseDecreaseButton.setMaximumHeight(20)
+        self.victoryDecreaseButton.setMaximumHeight(20)
+
+        layout.addWidget(self.victoryButton, 0, 0, 1, 1)
+        layout.addWidget(self.lossesButton, 0, 2, 1, 1)
+        layout.addWidget(self.victoryDecreaseButton, 1, 0, 1, 1)
+        layout.addWidget(self.losseDecreaseButton, 1, 2, 1, 1)
+
+        self.horizontalGroupBox.setLayout(layout)
+
+    def createDisplay(self):
+        self.displayLCD = QGroupBox("")
+        layout = QHBoxLayout()
+
+        paletteLosses = QPalette()
+        paletteVictory = QPalette()
+
+        paletteLosses.setColor(paletteLosses.WindowText, QColor(255, 000, 000))
+        paletteVictory.setColor(paletteVictory.WindowText, QColor(000, 255, 000))
+
+        self.lossesLcd = QLCDNumber(3)
+        self.lossesLcd.setSegmentStyle(QLCDNumber.Filled)
+        self.lossesLcd.setPalette(paletteLosses)
+
+        self.victoryLcd = QLCDNumber(3)
+        self.victoryLcd.setSegmentStyle(QLCDNumber.Filled)
+        self.victoryLcd.setPalette(paletteVictory)
 
         self.lossesLcd.setMinimumHeight(100)
         self.victoryLcd.setMinimumHeight(100)
 
-        mainLayout = QGridLayout()
+        self.lossesLcd.setMinimumWidth(150)
+        self.victoryLcd.setMinimumWidth(150)
 
-        mainLayout.addWidget(self.lossesLcd, 0, 2, 1, 1)
-        mainLayout.addWidget(self.victoryLcd, 0, 0, 1, 1)
-        mainLayout.addWidget(self.victoryButton, 1, 0, 1, 1)
-        mainLayout.addWidget(self.victoryDecreaseButton, 1, 1, 1, 1)
-        mainLayout.addWidget(self.lossesButton, 1, 2, 1, 1)
-        mainLayout.addWidget(self.losseDecreaseButton, 1, 3, 1, 1)
+        layout.addWidget(self.victoryLcd)
+        layout.addWidget(self.lossesLcd)
 
-        self.setLayout(mainLayout)
-
-        self.setWindowTitle("Objetives")
+        self.displayLCD.setLayout(layout)
 
     def addVictoryOrLosses(self):
         clickedButton = self.sender()
@@ -76,7 +97,7 @@ class Objetives(QWidget):
         # clickedOp = clickedButton.op()
         operand = float(1)
 
-        if clickedOperator == "Victory": #or clickedOperator == "VD":
+        if clickedOperator == "Victory":
             self.numVictory = self.numVictory + 1
             self.victoryLcd.display(str(self.numVictory))
 
