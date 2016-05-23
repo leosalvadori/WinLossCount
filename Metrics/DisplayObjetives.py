@@ -27,6 +27,7 @@ class Objetives(QWidget):
         super(Objetives, self).__init__(parent)
 
         self.createDisplay()
+        self.createDisplayAverage()
         self.createButtons()
 
         self.numVictory = 0
@@ -35,6 +36,7 @@ class Objetives(QWidget):
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.displayLCD)
         mainLayout.addWidget(self.horizontalGroupBox)
+        mainLayout.addWidget(self.displayLCDAverage)
 
         self.setLayout(mainLayout)
 
@@ -46,8 +48,8 @@ class Objetives(QWidget):
 
         self.victoryButton = self.createButton("Victory", "+",self.addVictoryOrLosses)
         self.lossesButton = self.createButton("Losses", "+",self.addVictoryOrLosses)
-        self.victoryDecreaseButton = self.createButton("VD","-",self.addVictoryOrLosses)
-        self.losseDecreaseButton = self.createButton("LD","-",self.addVictoryOrLosses)
+        self.victoryDecreaseButton = self.createButton("DV","-",self.addVictoryOrLosses)
+        self.losseDecreaseButton = self.createButton("DL","-",self.addVictoryOrLosses)
 
         self.lossesButton.setMinimumWidth(150)
         self.victoryButton.setMinimumWidth(150)
@@ -61,6 +63,35 @@ class Objetives(QWidget):
         layout.addWidget(self.losseDecreaseButton, 1, 2, 1, 1)
 
         self.horizontalGroupBox.setLayout(layout)
+
+    def createDisplayAverage(self):
+        self.displayLCDAverage = QGroupBox("Average")
+        layout = QHBoxLayout()
+
+        paletteLosses = QPalette()
+        paletteVictory = QPalette()
+
+        paletteLosses.setColor(paletteLosses.WindowText, QColor(255, 000, 000))
+        paletteVictory.setColor(paletteVictory.WindowText, QColor(000, 255, 000))
+
+        self.lossesLcdAv = QLCDNumber(5)
+        self.lossesLcdAv.setSegmentStyle(QLCDNumber.Filled)
+        self.lossesLcdAv.setPalette(paletteLosses)
+
+        self.victoryLcdAv = QLCDNumber(5)
+        self.victoryLcdAv.setSegmentStyle(QLCDNumber.Filled)
+        self.victoryLcdAv.setPalette(paletteVictory)
+
+        self.lossesLcdAv.setMinimumHeight(100)
+        self.victoryLcdAv.setMinimumHeight(100)
+
+        self.lossesLcdAv.setMinimumWidth(150)
+        self.victoryLcdAv.setMinimumWidth(150)
+
+        layout.addWidget(self.victoryLcdAv)
+        layout.addWidget(self.lossesLcdAv)
+
+        self.displayLCDAverage.setLayout(layout)
 
     def createDisplay(self):
         self.displayLCD = QGroupBox("")
@@ -94,16 +125,31 @@ class Objetives(QWidget):
     def addVictoryOrLosses(self):
         clickedButton = self.sender()
         clickedOperator = clickedButton.text()
-        # clickedOp = clickedButton.op()
         operand = float(1)
 
         if clickedOperator == "Victory":
             self.numVictory = self.numVictory + 1
             self.victoryLcd.display(str(self.numVictory))
 
+        if clickedOperator == "DV":
+            self.numVictory = self.numVictory - 1
+            self.victoryLcd.display(str(self.numVictory))
+
         if clickedOperator == "Losses":
             self.numLosses = self.numLosses + 1
             self.lossesLcd.display(str(self.numLosses))
+
+        if clickedOperator == "DL":
+            self.numLosses = self.numLosses - 1
+            self.lossesLcd.display(str(self.numLosses))
+
+        self.calculateAverage()
+
+    def calculateAverage(self):
+        total = self.numVictory + self.numLosses
+
+        self.victoryLcdAv.display(str(int(self.numVictory / total * 100)))
+        self.lossesLcdAv.display(str(int(self.numLosses / total * 100)))
 
     def createButton(self, text, op, member):
         button = Button(text,op)
