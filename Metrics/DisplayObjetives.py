@@ -3,7 +3,7 @@ import math
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor, QPainter, QPalette
-from PyQt5.QtWidgets import (QApplication, QGridLayout, QLayout, QLineEdit,
+from PyQt5.QtWidgets import (QApplication, QGridLayout, QLayout, QLineEdit, QProgressBar,
         QSizePolicy, QToolButton, QWidget, QLCDNumber, QGroupBox, QHBoxLayout, QPushButton)
 
 class Button(QToolButton):
@@ -36,7 +36,7 @@ class Objetives(QWidget):
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.displayLCD)
         mainLayout.addWidget(self.horizontalGroupBox)
-        mainLayout.addWidget(self.displayLCDAverage)
+        mainLayout.addWidget(self.displayWinPercent)
 
         self.setLayout(mainLayout)
 
@@ -65,33 +65,16 @@ class Objetives(QWidget):
         self.horizontalGroupBox.setLayout(layout)
 
     def createDisplayAverage(self):
-        self.displayLCDAverage = QGroupBox("Average")
+        self.displayWinPercent = QGroupBox("Wins")
         layout = QHBoxLayout()
 
-        paletteLosses = QPalette()
-        paletteVictory = QPalette()
+        self.progressBar = QProgressBar()
+        self.progressBar.setRange(0, 100)
+        # self.progressBar.setValue(5000)
 
-        paletteLosses.setColor(paletteLosses.WindowText, QColor(255, 000, 000))
-        paletteVictory.setColor(paletteVictory.WindowText, QColor(000, 255, 000))
+        layout.addWidget(self.progressBar)
 
-        self.lossesLcdAv = QLCDNumber(5)
-        self.lossesLcdAv.setSegmentStyle(QLCDNumber.Filled)
-        self.lossesLcdAv.setPalette(paletteLosses)
-
-        self.victoryLcdAv = QLCDNumber(5)
-        self.victoryLcdAv.setSegmentStyle(QLCDNumber.Filled)
-        self.victoryLcdAv.setPalette(paletteVictory)
-
-        self.lossesLcdAv.setMinimumHeight(100)
-        self.victoryLcdAv.setMinimumHeight(100)
-
-        self.lossesLcdAv.setMinimumWidth(150)
-        self.victoryLcdAv.setMinimumWidth(150)
-
-        layout.addWidget(self.victoryLcdAv)
-        layout.addWidget(self.lossesLcdAv)
-
-        self.displayLCDAverage.setLayout(layout)
+        self.displayWinPercent.setLayout(layout)
 
     def createDisplay(self):
         self.displayLCD = QGroupBox("")
@@ -148,8 +131,10 @@ class Objetives(QWidget):
     def calculateAverage(self):
         total = self.numVictory + self.numLosses
 
-        self.victoryLcdAv.display(str(int(self.numVictory / total * 100)))
-        self.lossesLcdAv.display(str(int(self.numLosses / total * 100)))
+        # self.progressBar.setValue((int(self.numVictory / total * 100)))
+        self.progressBar.setValue(100)
+        # self.victoryLcdAv.display(str(int(self.numVictory / total * 100)))
+        # self.lossesLcdAv.display(str(int(self.numLosses / total * 100)))
 
     def createButton(self, text, op, member):
         button = Button(text,op)
